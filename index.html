@@ -82,6 +82,32 @@
     }
 
     header {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+      align-items: start;
+    }
+
+    .header-brand {
+      justify-self: center;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .brand-logo {
+      height: clamp(40px, 6vw, 56px);
+      width: auto;
+      max-width: 220px;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 1px solid #d7e4f9;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 6px 14px rgba(18, 51, 109, 0.08);
+      padding: 4px;
+    }
+
+    .header-copy {
       text-align: center;
       max-width: 700px;
       margin: 0 auto;
@@ -224,6 +250,31 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
+      align-items: end;
+    }
+
+    .download-cta {
+      display: grid;
+      gap: 6px;
+      align-content: end;
+    }
+
+    .download-ready-label {
+      min-height: 18px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0f8a4a;
+      letter-spacing: 0.1px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+    }
+
+    .download-ready-label.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     button {
@@ -261,9 +312,39 @@
       color: #1b3c7a;
     }
 
+    .btn-download {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .download-icon {
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+    }
+
     .btn-secondary:hover:not(:disabled) {
       background: #dfe9ff;
       transform: translateY(-2px);
+    }
+
+    .btn-secondary.ready {
+      background: linear-gradient(180deg, #3192ff 0%, #1d5eff 100%);
+      border-color: #3f83ff;
+      color: #ffffff;
+      box-shadow: 0 12px 24px rgba(29, 94, 255, 0.33);
+    }
+
+    .btn-secondary.ready:hover:not(:disabled) {
+      background: linear-gradient(180deg, #2087ff 0%, #164fdd 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary.attention {
+      animation: download-pulse 1.2s ease-in-out infinite;
     }
 
     button:disabled {
@@ -480,6 +561,16 @@
       }
     }
 
+    @keyframes download-pulse {
+      0%,
+      100% {
+        box-shadow: 0 12px 24px rgba(29, 94, 255, 0.33);
+      }
+      50% {
+        box-shadow: 0 0 0 6px rgba(29, 94, 255, 0.18), 0 18px 30px rgba(29, 94, 255, 0.38);
+      }
+    }
+
     @media (max-width: 700px) {
       .card {
         padding: 20px 16px;
@@ -500,6 +591,10 @@
 
       .privacy-text {
         font-size: 0.86rem;
+      }
+
+      .brand-logo {
+        height: 44px;
       }
     }
 
@@ -533,8 +628,13 @@
       </section>
 
       <header>
-        <h1>Image to PDF Converter</h1>
-        <p class="subtitle">Upload an image and instantly convert it into a clean PDF document.</p>
+        <div class="header-brand">
+          <img class="brand-logo" src="images/logo.jpg" alt="Image to PDF Converter logo" />
+        </div>
+        <div class="header-copy">
+          <h1>Image to PDF Converter</h1>
+          <p class="subtitle">Upload an image and instantly convert it into a clean PDF document.</p>
+        </div>
       </header>
 
       <!-- Hidden file input that powers click-to-upload -->
@@ -552,7 +652,15 @@
 
       <div class="controls">
         <button id="convertBtn" class="btn-primary" type="button">Convert to PDF</button>
-        <button id="downloadBtn" class="btn-secondary" type="button" disabled>Download PDF</button>
+        <div class="download-cta">
+          <p id="downloadReadyLabel" class="download-ready-label">Your PDF is ready!</p>
+          <button id="downloadBtn" class="btn-secondary btn-download" type="button" disabled>
+            <svg class="download-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3.75v10.5m0 0 4-4m-4 4-4-4M4.75 15.75v1.5a3 3 0 0 0 3 3h8.5a3 3 0 0 0 3-3v-1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Download PDF</span>
+          </button>
+        </div>
       </div>
 
       <!-- 5-second loading experience shown while conversion is simulated -->
@@ -596,6 +704,7 @@
       const previewImage = document.getElementById("previewImage");
       const convertBtn = document.getElementById("convertBtn");
       const downloadBtn = document.getElementById("downloadBtn");
+      const downloadReadyLabel = document.getElementById("downloadReadyLabel");
       const statusEl = document.getElementById("status");
       const loadingPanel = document.getElementById("loadingPanel");
       const loaderMessage = document.getElementById("loaderMessage");
@@ -619,6 +728,7 @@
       let progressTimerId = null;
       let dotsTimerId = null;
       let dotCount = 1;
+      let ctaPulseTimeoutId = null;
 
       function setStatus(message, type) {
         statusEl.textContent = message || "";
@@ -643,6 +753,31 @@
         }
       }
 
+      function clearCtaPulseTimer() {
+        if (ctaPulseTimeoutId) {
+          clearTimeout(ctaPulseTimeoutId);
+          ctaPulseTimeoutId = null;
+        }
+      }
+
+      function resetDownloadCta() {
+        clearCtaPulseTimer();
+        downloadBtn.classList.remove("ready", "attention");
+        downloadReadyLabel.classList.remove("visible");
+      }
+
+      function highlightDownloadCta() {
+        resetDownloadCta();
+        downloadBtn.classList.add("ready", "attention");
+        downloadReadyLabel.classList.add("visible");
+
+        // Pulse briefly, then keep the prominent ready state.
+        ctaPulseTimeoutId = setTimeout(function () {
+          downloadBtn.classList.remove("attention");
+          ctaPulseTimeoutId = null;
+        }, 4500);
+      }
+
       function setControlsLocked(isLocked) {
         isProcessing = isLocked;
         fileInput.disabled = isLocked;
@@ -652,6 +787,7 @@
         dropZone.tabIndex = isLocked ? -1 : 0;
 
         if (isLocked) {
+          resetDownloadCta();
           downloadBtn.disabled = true;
         }
       }
@@ -697,6 +833,7 @@
       function resetPdfState() {
         pdfBlob = null;
         downloadBtn.disabled = true;
+        resetDownloadCta();
       }
 
       function readImage(file) {
@@ -859,6 +996,7 @@
             showSuccessPanel();
             setControlsLocked(false);
             downloadBtn.disabled = false;
+            highlightDownloadCta();
           } catch (error) {
             console.error(error);
             resetPdfState();
@@ -900,6 +1038,8 @@
         if (!pdfBlob) {
           return;
         }
+
+        downloadBtn.classList.remove("attention");
 
         const url = URL.createObjectURL(pdfBlob);
         const anchor = document.createElement("a");
