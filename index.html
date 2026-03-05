@@ -55,6 +55,8 @@
       width: min(940px, 100%);
       position: relative;
       z-index: 1;
+      display: grid;
+      gap: 16px;
     }
 
     .card {
@@ -176,6 +178,14 @@
       box-shadow: 0 0 0 4px rgba(29, 94, 255, 0.16);
     }
 
+    .drop-zone.disabled {
+      pointer-events: none;
+      opacity: 0.58;
+      filter: grayscale(0.12);
+      transform: none;
+      box-shadow: none;
+    }
+
     .drop-zone p {
       color: var(--text-muted);
       line-height: 1.56;
@@ -289,32 +299,158 @@
       border-color: #b9ebcd;
     }
 
-    .loading {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      width: fit-content;
-      color: #1f4a92;
-      font-size: 0.91rem;
-      font-weight: 600;
-      background: #edf3ff;
-      border: 1px solid #d7e4ff;
-      border-radius: 999px;
-      padding: 7px 11px;
+    .privacy-footer {
+      position: relative;
+      padding-top: 2px;
     }
 
-    .loading.active {
+    .privacy-footer::before {
+      content: "";
+      display: block;
+      width: min(760px, 100%);
+      height: 1px;
+      margin: 0 auto 14px;
+      background: linear-gradient(90deg, transparent 0%, #cfdcf3 14%, #cfdcf3 86%, transparent 100%);
+    }
+
+    .privacy-box {
+      margin: 0 auto;
+      max-width: 900px;
+      border: 1px solid #dbe4f5;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(243, 248, 255, 0.88) 100%);
+      box-shadow: 0 8px 20px rgba(19, 33, 63, 0.08);
+      padding: clamp(14px, 2.3vw, 18px);
+      text-align: center;
+      backdrop-filter: blur(2px);
+    }
+
+    .privacy-title {
       display: inline-flex;
-      animation: fade-up 0.2s ease-out;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: #1a3c72;
+      font-family: "Outfit", "Manrope", sans-serif;
+      font-size: 0.96rem;
+      letter-spacing: 0.16px;
+      font-weight: 700;
     }
 
-    .spinner {
+    .privacy-icon {
       width: 16px;
       height: 16px;
-      border: 2px solid #c5d8ff;
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
+      color: #1d5eff;
+      flex-shrink: 0;
+    }
+
+    .privacy-text {
+      color: #4f607c;
+      font-size: 0.9rem;
+      line-height: 1.62;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .loading-panel {
+      width: min(640px, 100%);
+      margin: 0 auto;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(10px);
+      overflow: hidden;
+      pointer-events: none;
+      border-radius: var(--radius-lg);
+      border: 1px solid #d6e4ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #edf4ff 100%);
+      box-shadow: 0 10px 22px rgba(31, 74, 146, 0.12);
+      transition: max-height 0.35s ease, opacity 0.3s ease, transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .loading-panel.active {
+      max-height: 240px;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      padding: 16px;
+    }
+
+    .loading-panel.processing {
+      animation: panel-pulse 2s ease-in-out infinite;
+    }
+
+    .loading-panel.success {
+      border-color: #bbe5ca;
+      background: linear-gradient(180deg, #f1fcf6 0%, #e8f8ef 100%);
+      box-shadow: 0 12px 24px rgba(15, 138, 74, 0.15);
+    }
+
+    .loader-message {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2px;
+      text-align: center;
+      color: #1f4a92;
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
+    .loading-panel.success .loader-message {
+      color: var(--success);
+    }
+
+    .loader-dots {
+      color: #2e5eb0;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      transition: opacity 0.24s ease;
+    }
+
+    .loading-panel.success .loader-dots {
+      opacity: 0;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: #dbe8ff;
+      overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(15, 58, 128, 0.18);
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2d72ff 0%, #4f9dff 45%, #1f8dff 100%);
+      box-shadow: 0 6px 12px rgba(41, 110, 245, 0.28);
+      transition: width 0.1s linear;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0) 70%);
+      transform: translateX(-100%);
+      animation: shimmer 1.6s linear infinite;
+    }
+
+    .loader-percent {
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+      color: #2150a0;
+      font-weight: 800;
+      font-size: 0.94rem;
     }
 
     @keyframes fade-up {
@@ -328,9 +464,19 @@
       }
     }
 
-    @keyframes spin {
+    @keyframes panel-pulse {
+      0%,
+      100% {
+        box-shadow: 0 10px 22px rgba(31, 74, 146, 0.12);
+      }
+      50% {
+        box-shadow: 0 16px 28px rgba(31, 74, 146, 0.2);
+      }
+    }
+
+    @keyframes shimmer {
       to {
-        transform: rotate(360deg);
+        transform: translateX(100%);
       }
     }
 
@@ -350,6 +496,10 @@
 
       .about-section p {
         font-size: 0.95rem;
+      }
+
+      .privacy-text {
+        font-size: 0.86rem;
       }
     }
 
@@ -405,14 +555,33 @@
         <button id="downloadBtn" class="btn-secondary" type="button" disabled>Download PDF</button>
       </div>
 
-      <!-- Lightweight loading indicator shown during PDF generation -->
-      <div id="loading" class="loading" aria-live="polite">
-        <span class="spinner" aria-hidden="true"></span>
-        <span>Generating PDF...</span>
+      <!-- 5-second loading experience shown while conversion is simulated -->
+      <div id="loadingPanel" class="loading-panel" aria-live="polite">
+        <p id="loaderMessage" class="loader-message">
+          <span id="loaderMessageText">Your file is being converted... Please hold</span>
+          <span id="loaderDots" class="loader-dots" aria-hidden="true">.</span>
+        </p>
+        <div id="progressTrack" class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <span id="loaderPercent" class="loader-percent">0%</span>
       </div>
 
       <p id="status" class="status" aria-live="polite"></p>
     </section>
+
+    <footer class="privacy-footer" aria-label="Privacy Notice">
+      <section class="privacy-box">
+        <h2 class="privacy-title">
+          <svg class="privacy-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2.75 5.25 5.5v5.74c0 5.06 3.2 9.81 6.75 11.01 3.55-1.2 6.75-5.95 6.75-11.01V5.5L12 2.75Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9.2 12.2h5.6M10.3 9.45c0-.95.77-1.72 1.72-1.72.95 0 1.72.77 1.72 1.72v2.75h-3.44V9.45Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Privacy Notice</span>
+        </h2>
+        <p class="privacy-text">“This tool processes your image directly in your browser. No files are uploaded to a server, stored, or saved anywhere. The conversion happens locally on your device, and once the PDF is downloaded, no data remains in the system. Your files remain completely private.”</p>
+      </section>
+    </footer>
   </main>
 
   <!-- jsPDF CDN (no framework dependencies) -->
@@ -428,21 +597,101 @@
       const convertBtn = document.getElementById("convertBtn");
       const downloadBtn = document.getElementById("downloadBtn");
       const statusEl = document.getElementById("status");
-      const loadingEl = document.getElementById("loading");
+      const loadingPanel = document.getElementById("loadingPanel");
+      const loaderMessage = document.getElementById("loaderMessage");
+      const loaderMessageText = document.getElementById("loaderMessageText");
+      const loaderDots = document.getElementById("loaderDots");
+      const loaderPercent = document.getElementById("loaderPercent");
+      const progressTrack = document.getElementById("progressTrack");
+      const progressFill = document.getElementById("progressFill");
+
+      const CONVERSION_DURATION_MS = 5000;
+      const PROGRESS_STEP_MS = 50;
+      const DOTS_STEP_MS = 350;
+      const PROCESSING_MESSAGE = "Your file is being converted... Please hold";
+      const SUCCESS_MESSAGE = "✅ Your file is ready to download.";
 
       let imageDataUrl = "";
       let imageType = "";
       let pdfBlob = null;
       let lastFileName = "converted-image";
+      let isProcessing = false;
+      let progressTimerId = null;
+      let dotsTimerId = null;
+      let dotCount = 1;
 
       function setStatus(message, type) {
         statusEl.textContent = message || "";
         statusEl.className = "status" + (type ? " " + type : "");
       }
 
-      function setLoading(isLoading) {
-        loadingEl.classList.toggle("active", isLoading);
-        convertBtn.disabled = isLoading;
+      function setProgress(value) {
+        const safeValue = Math.max(0, Math.min(100, Math.round(value)));
+        progressFill.style.width = safeValue + "%";
+        loaderPercent.textContent = safeValue + "%";
+        progressTrack.setAttribute("aria-valuenow", String(safeValue));
+      }
+
+      function clearLoadingTimers() {
+        if (progressTimerId) {
+          clearInterval(progressTimerId);
+          progressTimerId = null;
+        }
+        if (dotsTimerId) {
+          clearInterval(dotsTimerId);
+          dotsTimerId = null;
+        }
+      }
+
+      function setControlsLocked(isLocked) {
+        isProcessing = isLocked;
+        fileInput.disabled = isLocked;
+        convertBtn.disabled = isLocked;
+        dropZone.classList.toggle("disabled", isLocked);
+        dropZone.setAttribute("aria-disabled", isLocked ? "true" : "false");
+        dropZone.tabIndex = isLocked ? -1 : 0;
+
+        if (isLocked) {
+          downloadBtn.disabled = true;
+        }
+      }
+
+      function resetLoadingPanel() {
+        clearLoadingTimers();
+        loadingPanel.classList.remove("active", "processing", "success");
+        loaderMessageText.textContent = PROCESSING_MESSAGE;
+        loaderMessage.style.opacity = "1";
+        loaderDots.hidden = false;
+        dotCount = 1;
+        loaderDots.textContent = ".";
+        setProgress(0);
+      }
+
+      function startLoadingPanel() {
+        resetLoadingPanel();
+        loadingPanel.classList.add("active", "processing");
+      }
+
+      function startDotsAnimation() {
+        dotsTimerId = setInterval(function () {
+          dotCount = (dotCount % 3) + 1;
+          loaderDots.textContent = ".".repeat(dotCount);
+        }, DOTS_STEP_MS);
+      }
+
+      function swapLoaderMessage(nextMessage) {
+        loaderMessage.style.opacity = "0";
+        setTimeout(function () {
+          loaderMessageText.textContent = nextMessage;
+          loaderMessage.style.opacity = "1";
+        }, 140);
+      }
+
+      function showSuccessPanel() {
+        loadingPanel.classList.remove("processing");
+        loadingPanel.classList.add("success");
+        loaderDots.hidden = true;
+        swapLoaderMessage(SUCCESS_MESSAGE);
       }
 
       function resetPdfState() {
@@ -451,6 +700,9 @@
       }
 
       function readImage(file) {
+        resetLoadingPanel();
+        setControlsLocked(false);
+
         const validTypes = ["image/jpeg", "image/png"];
         if (!validTypes.includes(file.type)) {
           setStatus("Please upload a JPG or PNG image file.", "error");
@@ -475,6 +727,10 @@
       }
 
       function processFileList(files) {
+        if (isProcessing) {
+          return;
+        }
+
         if (!files || !files.length) {
           return;
         }
@@ -504,6 +760,9 @@
 
       ["dragenter", "dragover"].forEach(function (eventName) {
         dropZone.addEventListener(eventName, function () {
+          if (isProcessing) {
+            return;
+          }
           dropZone.classList.add("drag-over");
         });
       });
@@ -515,14 +774,23 @@
       });
 
       dropZone.addEventListener("drop", function (event) {
+        if (isProcessing) {
+          return;
+        }
         processFileList(event.dataTransfer.files);
       });
 
       dropZone.addEventListener("click", function () {
+        if (isProcessing) {
+          return;
+        }
         fileInput.click();
       });
 
       dropZone.addEventListener("keydown", function (event) {
+        if (isProcessing) {
+          return;
+        }
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           fileInput.click();
@@ -530,58 +798,102 @@
       });
 
       fileInput.addEventListener("change", function (event) {
+        if (isProcessing) {
+          return;
+        }
         processFileList(event.target.files);
       });
 
+      async function createPdfBlob() {
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4"
+        });
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const maxWidth = pageWidth - margin * 2;
+        const maxHeight = pageHeight - margin * 2;
+
+        const loadedImage = await loadImageSize(imageDataUrl);
+        const sourceWidth = loadedImage.width;
+        const sourceHeight = loadedImage.height;
+
+        const scale = Math.min(maxWidth / sourceWidth, maxHeight / sourceHeight);
+        const renderWidth = sourceWidth * scale;
+        const renderHeight = sourceHeight * scale;
+
+        const x = (pageWidth - renderWidth) / 2;
+        const y = (pageHeight - renderHeight) / 2;
+
+        const pdfImageType = imageType === "image/png" ? "PNG" : "JPEG";
+        pdf.addImage(imageDataUrl, pdfImageType, x, y, renderWidth, renderHeight);
+
+        return pdf.output("blob");
+      }
+
+      function runSimulatedConversion(pdfPromise) {
+        const totalSteps = Math.ceil(CONVERSION_DURATION_MS / PROGRESS_STEP_MS);
+        let currentStep = 0;
+
+        startDotsAnimation();
+        progressTimerId = setInterval(function () {
+          currentStep += 1;
+          const progressValue = Math.min(99, (currentStep / totalSteps) * 100);
+          setProgress(progressValue);
+        }, PROGRESS_STEP_MS);
+
+        setTimeout(async function () {
+          clearLoadingTimers();
+          setProgress(100);
+
+          try {
+            const result = await pdfPromise;
+            if (result.error) {
+              throw result.error;
+            }
+
+            pdfBlob = result.blob;
+            showSuccessPanel();
+            setControlsLocked(false);
+            downloadBtn.disabled = false;
+          } catch (error) {
+            console.error(error);
+            resetPdfState();
+            setControlsLocked(false);
+            resetLoadingPanel();
+            setStatus("Something went wrong while creating the PDF. Please try again.", "error");
+          }
+        }, CONVERSION_DURATION_MS);
+      }
+
       convertBtn.addEventListener("click", function () {
+        if (isProcessing) {
+          return;
+        }
+
         if (!imageDataUrl) {
           setStatus("Please upload an image first.", "error");
           return;
         }
 
         setStatus("", "");
-        setLoading(true);
+        resetPdfState();
+        setControlsLocked(true);
+        startLoadingPanel();
 
-        // Run conversion asynchronously so the loading state is visible immediately.
-        setTimeout(async function () {
-          try {
-            const pdf = new jsPDF({
-              orientation: "portrait",
-              unit: "mm",
-              format: "a4"
-            });
+        // Prepare the PDF in parallel while the 5-second simulated progress runs.
+        const pdfPromise = createPdfBlob()
+          .then(function (blob) {
+            return { blob: blob, error: null };
+          })
+          .catch(function (error) {
+            return { blob: null, error: error };
+          });
 
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            const margin = 10;
-            const maxWidth = pageWidth - margin * 2;
-            const maxHeight = pageHeight - margin * 2;
-
-            const loadedImage = await loadImageSize(imageDataUrl);
-            const sourceWidth = loadedImage.width;
-            const sourceHeight = loadedImage.height;
-
-            const scale = Math.min(maxWidth / sourceWidth, maxHeight / sourceHeight);
-            const renderWidth = sourceWidth * scale;
-            const renderHeight = sourceHeight * scale;
-
-            const x = (pageWidth - renderWidth) / 2;
-            const y = (pageHeight - renderHeight) / 2;
-
-            const pdfImageType = imageType === "image/png" ? "PNG" : "JPEG";
-            pdf.addImage(imageDataUrl, pdfImageType, x, y, renderWidth, renderHeight);
-
-            pdfBlob = pdf.output("blob");
-            downloadBtn.disabled = false;
-            setStatus("PDF is ready. Click Download PDF to save it.", "success");
-          } catch (error) {
-            console.error(error);
-            resetPdfState();
-            setStatus("Something went wrong while creating the PDF. Please try again.", "error");
-          } finally {
-            setLoading(false);
-          }
-        }, 120);
+        runSimulatedConversion(pdfPromise);
       });
 
       downloadBtn.addEventListener("click", function () {
@@ -600,6 +912,8 @@
           URL.revokeObjectURL(url);
         }, 1000);
       });
+
+      resetLoadingPanel();
     })();
   </script>
 </body>
